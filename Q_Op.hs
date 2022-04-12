@@ -8,6 +8,7 @@ import QIO.Qio
 import QIO.QIORandom
 import QIO.QArith as QQA
 import QIO.QioSyn as QS
+--test
 
 --Datentyp für Funktionen, um Sequenzen aus Funktionen zu erstellen 
 --data U = UReturn --leere Funktion am Ende der Sequenz

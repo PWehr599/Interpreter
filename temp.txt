@@ -1,0 +1,182 @@
+alte fälle aus LExp.hs und Wellformed.hs
+Wahrscheinlich müll 
+
+
+newReduction (App (Quantum(Operation operation))(e2)) freshvars = do 
+  (e2',vars) <- newReduction (e2) freshvars
+  return ((App(Quantum(Operation operation)))e2', vars)
+
+newReduction (App e1 (Quantum(QbValue e))) freshvars = do -- nötig App e1 e2?
+  (e2',vars) <-  newReduction (Quantum (QbValue e)) freshvars
+  return ((App e1 e2'), vars)
+
+newReduction (App e1 (Quantum(Qb q))) freshvars = do --richtig?
+  (e1',vars) <-  newReduction e1 freshvars
+  return ((App e1'(Quantum(Qb q))), vars)
+
+newReduction (App (Quantum(Qb q)) e2) freshvars = do --richtig?
+  (e2',vars) <-  newReduction e2 freshvars
+  return ((App(Quantum(Qb q)) e2'), vars)
+
+newReduction(App (App (Quantum(Qb q))(Var var)) e2) freshvars = do --richtig? ---------
+  (e2',vars) <- newReduction e2 freshvars
+  return ((App (App (Quantum(Qb q))(Var var))e2'),vars)
+
+newReduction(App (App (Var var)(Quantum(Qb q))) e2) freshvars = do --richtig? ---------
+  (e2',vars) <- newReduction e2 freshvars
+  return ((App (App (Var var)(Quantum(Qb q)))e2'),vars)
+
+  newReduction(App (App (Quantum(Qb q))(Var var)) e2) freshvars = do --richtig? ---------
+  (e2',vars) <- newReduction e2 freshvars
+  return ((App (App (Quantum(Qb q))(Var var))e2'),vars)
+
+newReduction(App (App (Var var)(Quantum(Qb q))) e2) freshvars = do --richtig? ---------
+  (e2',vars) <- newReduction e2 freshvars
+  return ((App (App (Var var)(Quantum(Qb q)))e2'),vars)
+
+newReduction (App(App (Quantum(Qb q1))(Quantum(Qb q2))) e2) freshvars = do --richtig? ---------
+  (e2',vars) <- newReduction e2 freshvars
+  return((App(App (Quantum(Qb q1))(Quantum(Qb q2))) e2'),vars)
+--App (App (Lambda "x_1" (Var "x_1")) (App (Var "f") (Quantum (Qb (Qbit:0)))))
+
+newReduction(App(App(Lambda v1 e1)(App( Var var)(Quantum(Qb q))))e2) freshvars = do --richtig? ---------
+  (e2',vars) <- newReduction e2 freshvars
+  return((App(App(Lambda v1 e1)(App( Var var)(Quantum(Qb q))))e2'),vars)
+
+MEASURERESULT LETZTE FÄLLE
+--newReduction (App e1 e2) freshvars = do  --nicht CBV
+--  (e2',vars) <-  newReduction e2 freshvars --gleicher Fehler wie bei exprExcl, nur an anderer Stelle
+--  return ((App e1 e2'), vars)
+
+--von rechtesten Qbit so lange rein bis keins messbar 
+measureResult :: LExp String ->  QIO (LExp String)
+measureResult (Quantum(Qb q)) = do 
+  b <-measQbit q
+  return (Quantum(Qb_M b))
+
+measureResult (App e1 e2) = do 
+  (e1') <- measureResult e1
+  (e2') <- measureResult e2
+  return(App e1' e2')
+
+measureResult (Lambda v e ) = do 
+  return (Lambda v e)
+
+measureResult (Excl_Lambda v e ) = do 
+  return (Excl_Lambda v e)
+
+measureResult (Var var ) = do 
+  return (Var var)
+
+measureResult(Excl(e)) = do 
+  return (Excl e)
+
+measureResult(Quantum(QbValue b)) = do --sollte nicht passieren
+  return (Quantum (QbValue b))
+
+measureResult(Quantum(Operation o)) = do --sollte nicht passieren
+  return (Quantum (Operation o))
+
+measureResult (Quantum(Qb_M b)) = do 
+  return (Quantum(Qb_M b))
+
+--measureResult (App e1 (Quantum(Qb q))) = do 
+--  e' <- measureResult (Quantum(Qb q))
+--  return (App e1 e')
+--measureResult (App e1 (Quantum(Qb_M b))) = do
+--  e1' <- measureResult e1
+--  return(App e1' (Quantum(Qb_M b)))
+
+----------------------------------------------------------------
+--measureResult (App e1 (Var var)) = do
+--  e1' <- measureResult e1
+--  return(App e1' (Var var))
+
+--measureResult (App (Var var) e2) = do
+--  e2' <- measureResult e2
+--  return(App (Var var) e2')
+
+--measureResult (App e1 (Lambda v e)) = do
+--  e1' <- measureResult e1
+--  return(App e1' (Lambda v e))
+
+--measureResult (App (Lambda v e) e2) = do -- ??
+---  e2' <- measureResult e2
+--  return(App (Lambda v e)e2')
+
+--measureResult (App e1 (Excl_Lambda v e)) = do
+--  e1' <- measureResult e1
+--  return(App e1' (Lambda v e))
+
+--measureResult (App (Excl_Lambda v e) e2) = do
+--  e2' <- measureResult e2
+--  return(App (Lambda v e) e2)
+
+--measureResult (App e1 (Excl(e))) = do
+--  e1' <- measureResult e1
+--  return(App e1' (Excl(e)))
+
+--measureResult (App (Excl(e)) e2) = do
+--  e2' <- measureResult e2
+--  return(App (Excl(e)) e2)
+
+--measureResult (App e1 (App (Lambda v e) (App (Var var) (Quantum (Qb_M False))))) = do  --für exprExcl
+--  e1' <- measureResult e1
+--  return (App e1' (App (Lambda v e) (App (Var var) (Quantum (Qb_M False)))))
+------------------------------------------------------------------
+--measureResult (App (Quantum (Operation o)) e2) = do
+--  e2' <- measureResult e2
+--  return (App(Quantum (Operation o)) e2')
+
+--measureResult (App e1 (Quantum (Operation o))) = do 
+--  e1' <- measureResult e1
+--  return (App e1'(Quantum (Operation o)))
+--  e1' <-measureResult e1
+--  return (App e1' e2)
+--Ergebnis: App (App (Quantum (Qb (Qbit:0))) (Var "f")) (App (Quantum (QbValue False)) (Var "f"))
+
+--wenn kein Qbit/ Q_Op
+
+  --return(App e1' e2')
+{-
+substitute freshvars (App e1 e2) (Quantum q) var = 
+  let(e1',vars') = substitute freshvars e1 (Quantum q) var
+     (e2',vars'') = substitute freshvars e2 (Quantum q) var
+  in(App e1' e2', vars'')
+-}
+--measureResult (App e1 e2) = do 
+--  e1' <-measureResult e1
+--  return (App e1' e2)
+--Ergebnis: App (App (Quantum (Qb (Qbit:0))) (Var "f")) (App (Quantum (QbValue False)) (Var "f"))
+
+
+
+
+check_wellformed' (Excl(e)) context  --Pomotion
+  | (null context) /= True && allnonlinear context == True = check_wellformed' e context --vllt schöner später 
+  | otherwise = check_wellformed' Excl(e) context' --unnnötig?
+
+
+  check_wellformed' expr context vars
+  | (check_contraction expr context)  == True =
+    let var = get_contraction_var expr context --contraction
+        (expr', context',vars') = contraction expr context var vars 
+    in check_wellformed' expr' context' vars'
+
+  | check_dereliction expr context == True = -- dereliction
+    let var = get_dereliction_var expr context
+        context' = dereliction context var 
+    in check_wellformed' expr context' vars
+
+    {-
+      | check_dereliction expr context == True = -- dereliction, wenn zu früh ausgeführt kann checkwellformed' nicht mehr beenden 
+        let var = get_dereliction_var expr context
+            context' = drop_context context var
+            context'' = context' ++ [unlinear var]
+        in check_wellformed' expr context'' vars  
+    -}
+    {-
+      | check_weakening expr context == True = --weakening -> Vielleicht nur in Var var case abfragen?
+        let context' = do_weakening expr context
+        in check_wellformed' expr context' vars
+    -}

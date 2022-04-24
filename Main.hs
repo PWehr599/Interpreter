@@ -143,6 +143,7 @@ main :: IO()
 main = do     
     let result = q_lambda_reductionsim verschraenkt
     print result
+    --print $ sim doCNOT
     {--
     print fix
     (res, his) <- q_lambda_reductionrun fix 

@@ -360,6 +360,10 @@ newReduction (Lambda v e) freshvars = do
 newReduction (Excl_Lambda v e) freshvars = do 
   return((Excl_Lambda v e),freshvars)
 
+newReduction (App(Excl e) e2) freshvars = do 
+  (e2',vars) <- newReduction e2 freshvars
+  return ((App(Excl e) e2'),freshvars)
+
 newReduction (Var var) freshvars = do
   return((Var var), freshvars)
 

@@ -8,7 +8,6 @@ import QIO.Qio
 import QIO.QIORandom
 import QIO.QArith as QQA
 import QIO.QioSyn as QS
---test
 
 --Datentyp für Funktionen, um Sequenzen aus Funktionen zu erstellen 
 --data U = UReturn --leere Funktion am Ende der Sequenz
@@ -156,15 +155,14 @@ cccNot :: Qbit -> Qbit -> Qbit -> Qbit -> Qbit -> U -- Dreier-control mit toffol
 cccNot q1 q2 q3 q4 qa =
     toffoli q1 q2 qa <> toffoli q3 qa q4 <> toffoli q1 q2 qa   
 
-doCccNOT :: QIO Bool -- 4er Toffoli  q4 apply
-doCccNOT = do
+doCNOT :: QIO [Bool] 
+doCNOT = do
     q1 <- mkQbit True
     q2 <- mkQbit True
-    q3 <- mkQbit True
-    q4 <- mkQbit False
-    applyU (ulet False (cccNot q1 q2 q3 q4))
-    applyOneS(q1)
-    measQbit q4
+    applyCNOT q1 q2
+    b1 <- measQbit q1
+    b2 <- measQbit q2
+    return [b1, b2]
 
 q0 :: QIO Qbit
 q0 = mkQ True

@@ -32,6 +32,7 @@ data Q_OpName  =
   | Y
   | Z
   | S
+  | St
   | R3  -- pi/8 drehung in TT
   | CNOT
   | Toffoli

@@ -312,6 +312,10 @@ newReduction (App(Quantum(Operation S ))(Quantum(Qb q ))) freshvars = do
   applyOneS q
   return(Quantum(Qb q), freshvars)
 
+newReduction (App(Quantum(Operation St ))(Quantum(Qb q ))) freshvars = do
+  applyOneSt q
+  return(Quantum(Qb q), freshvars)
+
 newReduction (App(Quantum(Operation R3 ))(Quantum(Qb q ))) freshvars = do
   applyOneR3 q
   return(Quantum(Qb q), freshvars)

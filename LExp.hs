@@ -62,7 +62,7 @@ substitute freshvars (Quantum q1) (Excl(e)) var =
 substitute freshvars (Quantum q1) (Lambda v e) var = -- wenn lambda discarded
   ((Quantum q1), freshvars)
 
-substitute freshvars (Quantum q1) (Quantum q2) var =  --well formed für verhindern Discard Qbits
+substitute freshvars (Quantum q1) (Quantum q2) var =  --well formed für verhindern Discard Qubits
   ((Quantum q1), freshvars)
 
 substitute freshvars (Var v) (Quantum q) var
@@ -290,6 +290,7 @@ newReduction (App (Lambda v1 e1) (Quantum(Operation o))) freshvars = do --nur Ko
 newReduction (App (Excl_Lambda v1 e1) (Excl(e2))) freshvars = do --pattern fehlt 
   let (e',vars) = substitute freshvars e1 e2 v1
   return (e',vars)
+  
 --Quantum Gates H, X, Y, Z, S, R3
 
 newReduction (App (Quantum(Operation H ))(Quantum(Qb q ))) freshvars  = do 
@@ -409,7 +410,7 @@ measureResult (Var var ) = do
 measureResult(Excl(e)) = do 
   return (Excl e)
 
-measureResult(Quantum(QbValue b)) = do --sollte nicht passieren, für fehler
+measureResult(Quantum(QbValue b)) = do --sollte nicht passieren, für fehler, oder in Excl Term
   return (Quantum (QbValue b))
 
 measureResult(Quantum(Operation o)) = do --sollte nicht passieren, aber bei Berechnungen ohne Qubit möglich

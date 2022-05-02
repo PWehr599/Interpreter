@@ -15,6 +15,7 @@ import QIO.QioSyn as QS
 -- | Swap Qbit Qbit U
 -- | Cond Qbit (Bool -> U) U
 -- | Ulet Bool (Qbit -> U) U
+
 -- mkQ: False=0, True=1
 
 --type Rotation = ((Bool,Bool) -> CC)  2*2 komplexe matrix
@@ -171,3 +172,11 @@ qPlus :: QIO Bool
 qPlus  =  do  qa <- q0
               applyOneY (qa)
               measQbit qa
+
+qH :: QIO Bool
+qH = do 
+q1 <- q0
+applyOneHadamard (q1)
+measQbit q1
+
+
